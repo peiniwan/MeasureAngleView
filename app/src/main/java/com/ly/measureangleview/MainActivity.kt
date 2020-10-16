@@ -16,6 +16,9 @@ class MainActivity : AppCompatActivity() {
         var textView = findViewById<TextView>(R.id.textView)
 
         var measureView = findViewById<MeasureAngleView>(R.id.measureView)
+        var measureView2 = findViewById<MeasuerAngleView2>(R.id.measureView2)
+        measureView2.setImageResource(R.drawable.abc)
+
         measureView.setOnAngleSelectedListener(object : MeasureAngleView.OnAngleSelectedListener {
             override fun onAngleSelected(angle: Int) {
                 Log.d("measureView", "Angle selected: " + angle)
@@ -44,9 +47,9 @@ class MainActivity : AppCompatActivity() {
 //            measureView.setShowLine(700,250,450,250,500,475)
             measureView.setShowLine(1332, 2916, 1476, 1728, 3276, 1116)
             measureView.setShowLine(0, 0, 200, 0, 200, 400)
-
-
         }
+
+
 
     }
 }
