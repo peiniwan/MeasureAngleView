@@ -27,6 +27,11 @@ class MeasuerAngleView2 : AppCompatImageView {
     var connectionRule = 0
     var k1 = Float.MAX_VALUE
     var k2 = Float.MAX_VALUE
+    var xuPoint1: Point? = null
+    var xuPoint2: Point? = null
+    private lateinit var mAcrPaint: Paint
+    var sweepAngle = 0
+
 
     constructor(context: Context) : super(context) {
         mContext = context
@@ -65,6 +70,13 @@ class MeasuerAngleView2 : AppCompatImageView {
         mExtendPaint.setStrokeCap(Paint.Cap.ROUND)
         mExtendPaint.pathEffect = DashPathEffect(floatArrayOf(14f, 14f), 1f)
 
+        mAcrPaint = Paint()
+        mAcrPaint.style = Paint.Style.STROKE
+        mAcrPaint.isAntiAlias = true
+        mAcrPaint.color = Color.parseColor("#146BFF")
+        mAcrPaint.strokeWidth = 10f
+        mAcrPaint.pathEffect = DashPathEffect(floatArrayOf(14f, 14f), 1f)
+
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -90,30 +102,54 @@ class MeasuerAngleView2 : AppCompatImageView {
     }
 
     private fun drawTranslationLine(canvas: Canvas?) {
-        if (middlePoint != null) {
-//            var x = middlePoint!!.x - 150
-//            var y = k2 * (x - middlePoint!!.x) + middlePoint!!.y
-
-            var y = middlePoint!!.y - 100
-            var x = (y - middlePoint!!.y) / k2 + middlePoint!!.x
-
+        if (middlePoint != null && xuPoint1 != null && xuPoint2 != null) {
             canvas?.drawLine(
-                x.toFloat(),
-                y.toFloat(),
+                xuPoint1!!.x.toFloat(),
+                xuPoint1!!.y.toFloat(),
                 middlePoint!!.x.toFloat(),
                 middlePoint!!.y.toFloat(),
                 mExtendPaint
             )
-            y = middlePoint!!.y + 100
-            x = (y - middlePoint!!.y) / k2 + middlePoint!!.x
             canvas?.drawLine(
-                x.toFloat(),
-                y.toFloat(),
+                xuPoint2!!.x.toFloat(),
+                xuPoint2!!.y.toFloat(),
                 middlePoint!!.x.toFloat(),
                 middlePoint!!.y.toFloat(),
                 mExtendPaint
             )
+            var startAngle = -getCurrentAngle1()
+            var distanceMiddle = 50f  //弧半径
+            var rectF = RectF(
+                middlePoint?.x!! - distanceMiddle,
+                middlePoint?.y!! - distanceMiddle,
+                middlePoint?.x!! + distanceMiddle,
+                middlePoint?.y!! + distanceMiddle
+            )
+            canvas?.drawArc(
+                rectF,
+                startAngle.toFloat(),
+                sweepAngle.toFloat(),
+                false,
+                mAcrPaint!!
+            ) // 绘制扇形
         }
+    }
+
+    fun getCurrentAngle1(): Int {
+        var shuiping = Point(mHandles[1]!!.x!! + 100, mHandles[1]!!.y!!)
+        val AB = Point(
+            mHandles[1]!!.x - mHandles[0]!!.x,
+            mHandles[1]!!.y - mHandles[0]!!.y
+        )
+        val CB = Point(
+            mHandles[1]!!.x - shuiping.x,
+            mHandles[1]!!.y - shuiping.y
+        )
+        val dot = (AB.x * CB.x + AB.y * CB.y).toDouble()
+        val cross = (AB.x * CB.y - AB.y * CB.x).toDouble()
+        val alpha = Math.atan2(cross, dot)
+        var xxx = Math.floor(alpha * 180.0 / Math.PI + 0.5).toInt()
+        return Math.abs(xxx)
     }
 
     private fun drawExtendLines(canvas: Canvas?) {
@@ -182,7 +218,24 @@ class MeasuerAngleView2 : AppCompatImageView {
                     )
                     list.add(data)
                 }
-
+                if (list.size > 1) {
+                    var yyy = mainLogic()
+                    if (yyy != null) {
+                        if (intersect) {
+                            var angle = getCurrentAngle(mHandles[0]!!, yyy!!, mHandles[3]!!)
+                            Log.d("getCurrentAngle", angle.toString())
+                            var angle2 = getCurrentAngle(mHandles[0]!!, yyy!!, mHandles[2]!!)
+                            Log.d("getCurrentAngle", angle2.toString())
+                        } else {
+                            if (xuPoint2 != null) {
+                                sweepAngle = getCurrentAngle(mHandles[0]!!, yyy!!, xuPoint2!!)
+                                Log.d("getCurrentAngle", "xuPoint：" + sweepAngle.toString())
+                            }
+                        }
+                        invalidate()
+                        return true
+                    }
+                }
                 return true
             }
         }
@@ -200,17 +253,6 @@ class MeasuerAngleView2 : AppCompatImageView {
     }
 
     private fun onDown(event: MotionEvent): Boolean {
-        if (list.size > 1) {
-            var yyy = mainLogic()
-            invalidate()
-            if (yyy != null) {
-                var angle = getCurrentAngle(mHandles[0]!!, yyy!!, mHandles[3]!!)
-                Log.d("getCurrentAngle", angle.toString())
-                var angle2 = getCurrentAngle(mHandles[0]!!, yyy!!, mHandles[2]!!)
-                Log.d("getCurrentAngle", angle2.toString())
-                return true
-            }
-        }
         downX = event.x
         downY = event.y
         return true
@@ -257,22 +299,29 @@ class MeasuerAngleView2 : AppCompatImageView {
                 var middleX = (mHandles[1]!!.x + mHandles[0]!!.x) / 2.toDouble()
                 var middleY = (mHandles[1]!!.y + mHandles[0]!!.y) / 2.toDouble()
                 middlePoint = Point(middleX.toInt(), middleY.toInt())
+
+                var x = 0f
+                var y = 0f
+                if (Math.abs(mHandles[2]!!.y - mHandles[3]!!.y) < 50) {
+                    x = (middlePoint!!.x - 150).toFloat()
+                    y = k2 * (x - middlePoint!!.x) + middlePoint!!.y
+                    xuPoint1 = Point(x.toInt(), y.toInt())
+
+                    x = (middlePoint!!.x + 150).toFloat()
+                    y = k2 * (x - middlePoint!!.x) + middlePoint!!.y
+                    xuPoint2 = Point(x.toInt(), y.toInt())
+
+                } else {
+                    y = (middlePoint!!.y - 100).toFloat()
+                    x = (y - middlePoint!!.y) / k2 + middlePoint!!.x
+                    xuPoint1 = Point(x.toInt(), y.toInt())
+                    y = (middlePoint!!.y + 100).toFloat()
+                    x = (y - middlePoint!!.y) / k2 + middlePoint!!.x
+                    xuPoint2 = Point(x.toInt(), y.toInt())
+                }
+
+
                 return middlePoint
-
-//                var y1 = mHandles[1]!!.y
-//                var y2 = mHandles[3]!!.y
-//                var x1 = 0.1
-//                var x2 = 0.0
-//                while (x1 != x2) {
-//                    x1 = (y1 * Math.abs(slope1))
-//                    x2 = (y2 * Math.abs(slope2))
-//                    y1 += 1
-//                    y2 += 1
-//                    Log.d("getCurrentAngle", "max1:" + y1 + "---" + y2)
-//                }
-//                Log.d("getCurrentAngle", "max2:" + x1 + "---" + y1)
-
-
             }
         }
         return null
@@ -438,5 +487,19 @@ class MeasuerAngleView2 : AppCompatImageView {
         return if (target >= a - 0.01 && target <= b + 0.01 || target <= a + 0.01 && target >= b - 0.01) true else false
     }
 
+
+    /**
+     *  垂直线
+     */
+    fun verticlalLine(): Point {
+        val dx = mHandles[1]!!.x!! - mHandles[0]!!.x!!
+        val dy = mHandles[1]!!.y!! - mHandles[0]!!.y!!
+
+        x = (mHandles[1]!!.x!! - dy).toFloat()
+        y = (mHandles[1]!!.y!! + dx).toFloat()
+
+        var vp = Point(x.toInt(), y.toInt())
+        return vp
+    }
 
 }

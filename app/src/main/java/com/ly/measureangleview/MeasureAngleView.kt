@@ -29,15 +29,18 @@ internal class MeasureAngleView : AppCompatImageView {
     private lateinit var mAcrPaint2: Paint
 
     private var mCurrentHandle: Point? = null
-
     private var mHandleSize = 21f
     private var mHandleColor = Color.parseColor("#146BFF")
-
     private var mListener: OnAngleSelectedListener? = null
     private var angleLessZero = false
     private var isShowLine = false
     private var cacheBitmap: Bitmap? = null
     private var scaleFactor = 1.5f
+    private var measuerModel=0  //0普通测量  1双线测量
+    //双线测量
+
+
+
 
 
     constructor(context: Context) : super(context) {
