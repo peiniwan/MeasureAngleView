@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/medrecord_shape_1a71ff_corner_4"
+    android:orientation="vertical"
+    android:paddingStart="8dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="4dp"
+    android:clickable="true"
+    tools:ignore="MissingDefaultResource">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="总分：5分 优"
+        android:textSize="12dp"
+        android:id="@+id/tvContent1"
+        android:textColor="@android:color/white"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="百分比： 80% 轻微疼痛"
+        android:id="@+id/tvContent2"
+        android:textSize="12dp"
+        android:textColor="@android:color/white"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="详情"
+        android:textSize="12dp"
+        android:id="@+id/tvContent3"
+        android:textColor="@android:color/white"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
