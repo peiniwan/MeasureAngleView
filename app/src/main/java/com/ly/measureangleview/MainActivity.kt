@@ -2,8 +2,6 @@ package com.ly.measureangleview
 
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.MarkerView
@@ -69,31 +67,46 @@ class MainActivity : AppCompatActivity() {
         lineMarkerView = FollowupMarkerView(this, R.layout.medrecord_line_markerview_followup)
         lineChart.marker = lineMarkerView
         lineMarkerView.chartView = lineChart
-        val tvContent1 = lineMarkerView.findViewById<TextView>(R.id.tvContent1)
+//        val tvContent1 = lineMarkerView.findViewById<TextView>(R.id.tvContent1)
 //        val tvContent2 = lineMarkerView.findViewById<TextView>(R.id.tvContent2)
 //        val tvContent3 = lineMarkerView.findViewById<TextView>(R.id.tvContent3)
 //        tvContent3.setOnClickListener {
 //            Toast.makeText(this@MainActivity,"dddd",Toast.LENGTH_SHORT).show()
 //        }
 
-        val lineChartManager = FollowupLineChartManager(lineChart)
+        val lineChartManager = FollowupLineChartManager(this,lineChart)
         //设置x轴的数据
         val xValuesMonth = ArrayList<String>()
         //设置y轴的数据()
         val yValues = ArrayList<Float>()
 
-        for (index in 0..20) {
+        for (index in 0..1) {
             xValues.add(index.toFloat())
         }
-        for (index in 20..40) {
-            xValuesMonth.add("01.23\n"+"术后" + index.toFloat().toInt().toString() + "月")
-            if (index == 30 || index == 31 || index == 32  || index == 37) {
-                yValues.add(-127f)
-            } else {
-                val xxx = (Math.random() * 100).toInt().toFloat()
-                yValues.add(xxx)
-            }
-        }
+        xValuesMonth.add("2010.01.23\n"+"节点名字"+1)
+        xValuesMonth.add("2010.01.23\n"+"节点名字"+2)
+//        xValuesMonth.add("2010.01.23\n"+"节点名字"+3)
+//        xValuesMonth.add("2010.01.23\n"+"节点名字"+4)
+//        xValuesMonth.add("2010.01.23\n"+"节点名字"+5)
+//        xValuesMonth.add("2010.01.23\n"+"节点名字"+6)
+
+        yValues.add(0.8f)
+        yValues.add(0.12f)
+//        yValues.add(-127f)
+//        yValues.add(55f)
+//        yValues.add(16f)
+//        yValues.add(67f)
+
+//        for (index in 0..2) {
+////            xValuesMonth.add("2010.01.23\n"+"术后" + index.toFloat().toInt().toString() + "月吧")
+//            xValuesMonth.add("2010.01.23\n"+"节点名字"+index)
+//            if (index == 30 || index == 31 || index == 32  || index == 37) {
+//                yValues.add(-127f)
+//            } else {
+//                val xxx = (Math.random() * 100).toInt().toFloat()
+//                yValues.add(xxx)
+//            }
+//        }
         var YType=0  ///总分、平均分、百分制
         lineChartManager.showSingleLineChart(
             xValuesMonth, xValues, yValues, Color.parseColor("#146aff"),YType
@@ -128,7 +141,7 @@ class MainActivity : AppCompatActivity() {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 var selectX = e?.x?.toInt() ?: 0
                 if (isSingleLine) {
-                    tvContent1.text="总分："+yValues[selectX].toInt().toString().plus("分")
+//                    tvContent1.text="总分："+yValues[selectX].toInt().toString().plus("分")
                     lineChartManager.notifyData(selectX)
                 }
             }

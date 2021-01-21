@@ -2,7 +2,7 @@ package com.ly.measureangleview
 
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import java.util.ArrayList
+import java.util.*
 
 
 class YAxixFormatter(var YType: Int) : IAxisValueFormatter {
@@ -17,7 +17,7 @@ class YAxixFormatter(var YType: Int) : IAxisValueFormatter {
             else -> "分  "
         }
 
-        return value.toInt().toString() + last
+        return Formatter().format("%.2f", value).toString() + last
     }
 
 }

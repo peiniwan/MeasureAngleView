@@ -670,7 +670,6 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         calculateOffsets();
         postInvalidate();
     }
-x
     /**
      * Zooms in or out by the given scale factor.
      * x and y are the values (NOT PIXELS) of the zoom center..

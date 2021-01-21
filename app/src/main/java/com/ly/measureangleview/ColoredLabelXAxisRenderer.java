@@ -55,7 +55,7 @@ public class ColoredLabelXAxisRenderer extends XAxisRenderer {
                 String label = mXAxis.getValueFormatter().getFormattedValue(mXAxis.mEntries[i / 2], mXAxis);
                 int color = getColorForXValue((int) mXAxis.mEntries[i / 2]); //added
 
-//                mAxisLabelPaint.setFakeBoldText(true);
+                mAxisLabelPaint.setFakeBoldText(true);
                 mAxisLabelPaint.setColor(color);
 
                 if (mXAxis.isAvoidFirstLastClippingEnabled()) {

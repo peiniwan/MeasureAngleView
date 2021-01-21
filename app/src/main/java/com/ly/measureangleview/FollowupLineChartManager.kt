@@ -1,10 +1,12 @@
 package com.ly.measureangleview
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -19,7 +21,7 @@ import java.util.*
 /**
  * 线形图管理类
  */
-class FollowupLineChartManager(private val lineChart: LineChart) {
+class FollowupLineChartManager(private val mContext: Context, private val lineChart: LineChart) {
     val leftAxis: YAxis   //左边Y轴
     val rightAxis: YAxis  //右边Y轴
     val xAxis: XAxis      //X轴
@@ -59,7 +61,17 @@ class FollowupLineChartManager(private val lineChart: LineChart) {
 //        xAxis.setLabelCount(xValues.size, false)
         xAxis.yOffset = 15f  //距离y轴距离
 //        xAxis.xOffset=-20f  //不起作用
-        xAxis.spaceMax = 0.2f //解决x最后显示不全问题
+        xAxis.spaceMax = 0.3f //解决x最后显示不全问题
+
+//        xAxis.setGranularity(2f) //设置X轴坐标之间的最小间隔
+//        xAxis.setCenterAxisLabels(true);
+
+
+//        xAxis.spaceMin = -20f;
+//        xAxis.spaceMax = 0f
+//        xAxis.gridLineWidth=300f
+//        xAxis.setAxisLineWidth(200f)
+
 
         lineChart.setDrawGridBackground(false)
         lineChart.setNoDataText("暂无数据")
@@ -79,7 +91,6 @@ class FollowupLineChartManager(private val lineChart: LineChart) {
 //        lineChart.isHighlightPerDragEnabled=false
 
 
-
         //右边Y轴
         rightAxis.isEnabled = false
         //和Y轴垂直网格线颜色
@@ -89,11 +100,14 @@ class FollowupLineChartManager(private val lineChart: LineChart) {
         leftAxis.axisLineColor = Color.parseColor("#D8D8D8")
         leftAxis.axisLineWidth = 1f
         leftAxis.enableGridDashedLine(10f, 10f, 200f)
-        leftAxis.setLabelCount(6, false)//5段
+        //设置y轴的标签数量。 请注意，这个数字是不固定 if(force == false)，只能是近似的。
+        // 如果 if(force == true)，则确切绘制指定数量的标签，但这样可能导致轴线分布不均匀
+        leftAxis.setLabelCount(6, true)//5段
         leftAxis.granularity = 1f
         //保证Y轴从0开始，不然会上移一点
-        leftAxis.axisMinimum = -1f //TODO 设置最小值-10,要不然会显示出断开的-数
-//        leftAxis.axisMaximum=120f
+        leftAxis.axisMinimum =0.12f //TODO 设置最小值-10,要不然会显示出断开的-数
+        leftAxis.axisMaximum=0.8f
+//        leftAxis.axisMaximum=100f
         leftAxis.setDrawAxisLine(false)
 
         //图例（哪条线什么颜色） 标签 设置
@@ -163,11 +177,16 @@ class FollowupLineChartManager(private val lineChart: LineChart) {
         lineDataSet.setDrawCircleHole(false)
         lineDataSet.valueTextSize = 10f
         //设置折线图填充
-        lineDataSet.setDrawFilled(mode)
+//        lineDataSet.setDrawFilled(mode)
         lineDataSet.formLineWidth = 1f
 //        lineDataSet.formSize = 15f
         //线模式为圆滑曲线（默认折线）
         lineDataSet.mode = LineDataSet.Mode.LINE_DISCONNECT
+//        lineDataSet.setGranularity(1.1f) //设置X轴坐标之间的最小间隔
+        lineDataSet.setDrawIcons(true)
+        lineDataSet.setValueFormatter { value, entry, dataSetIndex, viewPortHandler ->
+            (value.toString())
+        }
 
         lineDataSet.enableDashedHighlightLine(15f, 15f, 0f)//点击后的高亮线的显示样式
         //设置点击交点后显示高亮线宽
@@ -204,14 +223,19 @@ class FollowupLineChartManager(private val lineChart: LineChart) {
         xValues = xAxisValues
         yValues = yAxisValues
         initLineChart()
-        var selectCount = 5f
-        //todo 最后一个有值的
+        var selectCount =0f
+        lineChart.moveViewToX(selectCount)
         notifyData(selectCount.toInt())
         xAxis.valueFormatter = XAxixYearMonthFormatter(xMonths)
         leftAxis.valueFormatter = YAxixFormatter(YType)
+
+        var xx= ContextCompat.getDrawable(
+            mContext,
+            R.drawable.medrecord_icon_chart_dot
+        )
         val entries = ArrayList<Entry>()
         for (i in xAxisValues.indices) {
-            entries.add(Entry(xAxisValues[i], yAxisValues[i]))
+            entries.add(Entry(xAxisValues[i], yAxisValues[i],xx))
         }
         // 每一个LineDataSet代表一条线
         val lineDataSet = LineDataSet(entries, "")
@@ -219,7 +243,7 @@ class FollowupLineChartManager(private val lineChart: LineChart) {
 
 
         //是否绘制线上的数值
-        lineDataSet.setDrawValues(false)
+        lineDataSet.setDrawValues(true)
         //todo 多点展示？？
         //只有一条数据时，只显示一个点
 //        if (entries.size == 1) {
@@ -237,7 +261,7 @@ class FollowupLineChartManager(private val lineChart: LineChart) {
         lineChart.data = data
         lineChart.highlightValue(selectCount, 0, false)//默认选中哪个，从0开始
 
-        lineChart.setVisibleXRange(0f, 5.4f)
+        lineChart.setVisibleXRange(0f, 4.7f)
         lineChart.invalidate()
 
 

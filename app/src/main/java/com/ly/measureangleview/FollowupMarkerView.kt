@@ -103,11 +103,10 @@ class FollowupMarkerView : MarkerView {
             offset.y = -700f
         }
         //处理X方向，分为3种情况，1、在图表左边 2、在图表中间 3、在图表右边
-        //
-        if (posX > chart.width - width) {//如果超过右边界，则向左偏移markerView的宽度
-            offset.x = -width - 15
+        if (posX > chart.width - width ) {//如果超过右边界，则向左偏移markerView的宽度
+            offset.x = -width - 15  //左
         } else {//默认情况，不偏移（因为是点是在左上角）
-            offset.x = 15f
+            offset.x = 15f  //右
             if (posX > width) {//如果大于markerView
                 offset.x = -(width) - 15
             }
